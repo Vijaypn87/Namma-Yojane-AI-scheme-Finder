@@ -13,6 +13,10 @@ export const schemes = [
   { id: 'gruhini-sakhi', name: 'Gruhini Sakhi Household Resource', department: 'Department of Women and Child Development', category: 'Women', district: 'All Karnataka', benefitType: 'Family support', description: 'Demo household resource guide for women seeking public services.', benefit: 'Household service guidance', eligibility: { minAge: 18, gender: 'Female' }, documents: ['Identity document'], about: 'Fictional demo content for a family support discovery card.', process: ['Review official service details', 'Contact the local office', 'Use only the official application route'], officialUrl: 'https://www.karnataka.gov.in', lastVerified: 'Demo record', status: 'demo' },
 ]
 
-export const categoryOptions = ['All categories', 'Students', 'Working Professionals', 'Women', 'Men', 'Farmers', 'Senior Citizens', 'Housing & Families', 'Persons with Disabilities', 'Entrepreneurs', 'General Public']
+const categoryOrder = ['Students', 'Working Professionals', 'Women', 'Farmers', 'Senior Citizens', 'Housing & Families', 'Persons with Disabilities', 'Entrepreneurs', 'General Public']
+// Only list categories that actually have schemes, so no filter leads to an empty page.
+export const schemeCategories = categoryOrder.filter((category) => schemes.some((scheme) => scheme.category === category))
+export const countByCategory = (category) => schemes.filter((scheme) => scheme.category === category).length
+export const categoryOptions = ['All categories', ...schemeCategories]
 export const departmentOptions = ['All departments', ...new Set(schemes.map((scheme) => scheme.department))]
 export const benefitOptions = ['All benefits', ...new Set(schemes.map((scheme) => scheme.benefitType))]
