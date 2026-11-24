@@ -1,16 +1,41 @@
-# React + Vite
+# Namma Yojane – Karnataka Scheme Finder
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A bilingual (English / ಕನ್ನಡ) prototype that helps people in Karnataka discover
+government schemes they may be eligible for.
 
-Currently, two official plugins are available:
+> **Demo prototype.** All scheme records are fictional sample data. Login and the
+> "AI assistant" are placeholders – no real authentication or AI model is connected.
+> Always confirm details on official government websites.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Explore** – search and filter schemes by category, department and benefit type.
+- **Find my schemes** – a 5-step questionnaire; answers stay in the browser
+  (sessionStorage) and are matched with transparent rules in
+  `src/utils/eligibility.js`. Any failed requirement (age, gender, student,
+  farmer, disability, occupation) excludes a scheme.
+- **Scheme details**, **saved schemes** (stored in localStorage) and a Kannada toggle.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Run locally
 
-## Expanding the Oxlint configuration
+```bash
+npm install
+npm run dev      # http://localhost:5173
+npm run build    # production build in dist/
+npm run lint
+```
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Deploy (GitHub Pages)
+
+The workflow in `.github/workflows/deploy.yml` builds and publishes the site on
+every push to `main`.
+
+1. Push this repository to GitHub.
+2. In the repo, open **Settings → Pages** and set **Source** to **GitHub Actions**.
+3. Push to `main` (or run the workflow manually from the **Actions** tab).
+
+The site will be live at `https://<your-username>.github.io/<repo-name>/`.
+
+## Tech
+
+React 19, Vite, React Router, Tailwind CSS, lucide-react icons.

@@ -1568,6 +1568,11 @@ h2 {
         display: none;
     }
 
+    .select-filters.is-open {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
     .filter-mobile {
         display: inline-flex;
         align-items: center;

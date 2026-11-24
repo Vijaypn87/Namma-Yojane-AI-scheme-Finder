@@ -20,34 +20,56 @@ import Assistant from "./pages/Assistant";
 import SavedSchemes from "./pages/SavedSchemes";
 import Auth from "./pages/Auth";
 import { t } from "./i18n/translations";
+import { countByCategory, schemeCategories, schemes } from "./data/schemes";
 import "./App.css";
+
+const plural = (n, word, many = `${word}s`) => `${n} ${n === 1 ? word : many}`;
 
 const categories = [
   {
     icon: Users,
     label: "Families",
-    count: "24 schemes",
+    category: "Housing & Families",
     copy: "Support for everyday needs",
   },
   {
     icon: Wheat,
     label: "Farmers",
-    count: "18 schemes",
+    category: "Farmers",
     copy: "Tools for rural livelihoods",
   },
   {
     icon: BriefcaseBusiness,
     label: "Employment",
-    count: "15 schemes",
+    category: "Working Professionals",
     copy: "Work and skill opportunities",
   },
   {
     icon: Sparkles,
     label: "Students",
-    count: "12 schemes",
+    category: "Students",
     copy: "Education made more accessible",
   },
 ];
+
+function readStored(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return fallback;
+    const value = JSON.parse(raw);
+    return Array.isArray(fallback) && !Array.isArray(value) ? fallback : value;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeStored(key, value) {
+  try {
+    localStorage.setItem(key, typeof value === "string" ? value : JSON.stringify(value));
+  } catch {
+    // Storage can be unavailable (private mode, blocked); the app still works without it.
+  }
+}
 
 function Home({ language }) {
   return (
@@ -79,7 +101,7 @@ function Home({ language }) {
             </div>
             <div className="trust-row">
               <span>
-                <Check size={14} /> Verified information
+                <Check size={14} /> Links to official sources
               </span>
               <span>
                 <Check size={14} /> Kannada + English
@@ -115,8 +137,8 @@ function Home({ language }) {
               <span>Start here</span>
             </div>
             <div className="discovery-foot">
-              <span>10 categories</span>
-              <span>69+ demo schemes</span>
+              <span>{plural(schemeCategories.length, "category", "categories")}</span>
+              <span>{plural(schemes.length, "demo scheme")}</span>
             </div>
           </div>
         </div>
@@ -132,8 +154,12 @@ function Home({ language }) {
           </Link>
         </div>
         <div className="category-grid">
-          {categories.map(({ icon: Icon, label, count, copy }) => (
-            <Link className="category-card" to="/explore" key={label}>
+          {categories.map(({ icon: Icon, label, category, copy }) => (
+            <Link
+              className="category-card"
+              to={`/explore?category=${encodeURIComponent(category)}`}
+              key={label}
+            >
               <div className="category-icon">
                 <Icon size={21} />
               </div>
@@ -141,7 +167,9 @@ function Home({ language }) {
                 <h3>{label}</h3>
                 <p>{copy}</p>
               </div>
-              <span className="category-count">{count}</span>
+              <span className="category-count">
+                {plural(countByCategory(category), "scheme")}
+              </span>
             </Link>
           ))}
         </div>
@@ -226,29 +254,31 @@ function Placeholder({ title }) {
 }
 
 function App() {
-  const [language, setLanguage] = useState(
-    () => localStorage.getItem("namma-language") || "en",
-  );
-  const [savedIds, setSavedIds] = useState(() =>
-    JSON.parse(localStorage.getItem("namma-saved") || "[]"),
-  );
+  const [language, setLanguage] = useState(() => {
+    try {
+      return localStorage.getItem("namma-language") === "kn" ? "kn" : "en";
+    } catch {
+      return "en";
+    }
+  });
+  const [savedIds, setSavedIds] = useState(() => readStored("namma-saved", []));
   const toggleSave = (id) =>
     setSavedIds((current) => {
       const next = current.includes(id)
         ? current.filter((item) => item !== id)
         : [...current, id];
-      localStorage.setItem("namma-saved", JSON.stringify(next));
+      writeStored("namma-saved", next);
       return next;
     });
   return (
-    <BrowserRouter>
+    <BrowserRouter basename={import.meta.env.BASE_URL}>
       <div className="app">
         <Navbar
           language={language}
           onLanguageChange={() => {
             const next = language === "en" ? "kn" : "en";
             setLanguage(next);
-            localStorage.setItem("namma-language", next);
+            writeStored("namma-language", next);
           }}
         />
         <Routes>
